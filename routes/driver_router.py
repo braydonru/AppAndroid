@@ -21,6 +21,7 @@ async def get_drivers(websocket: WebSocket, db: SessionDep):
                 {
                     "id": d.id,
                     "name": d.name,
+                    "cellphone":d.cellphone,
                     "latitude": d.latitude,
                     "longitude": d.longitude
                 }
