@@ -1,22 +1,24 @@
 from http.client import HTTPException
-
+from typing import List
 from fastapi import APIRouter, exceptions
 from config.security import hash_password
 from .Deps.db_session import SessionDep
-from models.driver import Driver
+from models.driver import Driver, DriverCreateIn, DriverCreateOut
 from sqlmodel import select
 
 
 driver_router = APIRouter(tags=['Drivers'],prefix="/drivers")
 
-@driver_router.get("/get_drivers")
-def get_drivers(db:SessionDep):
-    res = select(Driver)
+@driver_router.get("/get_drivers", response_model=List[DriverCreateOut])
+def get_drivers(db:SessionDep)->List[DriverCreateOut]:
+    res = select(Driver).filter(Driver.Driving == True)
     drivers = db.exec(res).all()
-    return drivers
+    return [DriverCreateOut(name=d.name, cellphone=d.cellphone, longitude=d.longitude, latitude=d.latitude) for d in drivers]
+
+
 
 @driver_router.post("/create_driver")
-def create_driver(driver:Driver,db:SessionDep):
+def create_driver(driver:DriverCreateIn,db:SessionDep):
     D = Driver(**driver.model_dump())
     D.password = hash_password(driver.password)
     db.add(D)
