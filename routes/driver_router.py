@@ -1,6 +1,5 @@
 from http.client import HTTPException
 from typing import List
-
 from fastapi import APIRouter, exceptions, WebSocket, WebSocketDisconnect
 from config.security import hash_password
 from .Deps.db_session import SessionDep

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from config.db import engine
 from sqlmodel import SQLModel
+
+from config.security import security
 from models import *
 from routes.driver_router import driver_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,3 +25,4 @@ async def root():
     return {"message": "UberApp Backend"}
 
 app.include_router(driver_router)
+app.include_router(security)
