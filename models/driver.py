@@ -20,6 +20,7 @@ class DriverCreateIn(SQLModel):
     password: str = Field(default=None)
 
 class DriverCreateOut(SQLModel):
+    id: int = Field(default=None)
     name: str = Field(default=None)
     cellphone: str = Field(default=None, unique=True)
     longitude: Optional[float] = Field(default=0.0)

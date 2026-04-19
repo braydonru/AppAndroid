@@ -1,4 +1,6 @@
 from http.client import HTTPException
+from typing import List
+
 from fastapi import APIRouter, exceptions, WebSocket, WebSocketDisconnect
 from config.security import hash_password
 from .Deps.db_session import SessionDep
@@ -8,11 +10,11 @@ import asyncio
 
 driver_router = APIRouter(tags=['Drivers'],prefix="/drivers")
 
-@driver_router.get("/drivers")
-def drivers(db:SessionDep):
+@driver_router.get("/drivers", response_model=List[DriverCreateOut])
+def drivers(db:SessionDep)->List[DriverCreateOut]:
     res = select(Driver).filter(Driver.Driving == True, Driver.active == True)
     driver = db.exec(res).all()
-    return driver
+    return [DriverCreateOut(id = d.id, name=d.name, cellphone = d.cellphone, latitude = d.latitude, longitude = d.longitude) for d in driver]
 
 @driver_router.websocket("/get_drivers")
 async def get_drivers(websocket: WebSocket, db: SessionDep):
