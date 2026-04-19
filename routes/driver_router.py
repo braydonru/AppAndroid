@@ -8,6 +8,11 @@ import asyncio
 
 driver_router = APIRouter(tags=['Drivers'],prefix="/drivers")
 
+@driver_router.get("/drivers")
+def drivers(db:SessionDep):
+    res = select(Driver).filter(Driver.Driving == True, Driver.active == True)
+    driver = db.exec(res).all()
+    return driver
 
 @driver_router.websocket("/get_drivers")
 async def get_drivers(websocket: WebSocket, db: SessionDep):
