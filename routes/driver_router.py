@@ -1,7 +1,9 @@
 from http.client import HTTPException
-from typing import List
+from typing import List, Annotated
 from fastapi import APIRouter, exceptions, WebSocket, WebSocketDisconnect
-from config.security import hash_password
+from fastapi.params import Depends
+
+from config.security import hash_password, require_role
 from .Deps.db_session import SessionDep
 from models.driver import Driver, DriverCreateIn, DriverCreateOut
 from sqlmodel import select
@@ -40,7 +42,7 @@ async def get_drivers(websocket: WebSocket, db: SessionDep):
         print("Cliente desconectado")
 
 @driver_router.post("/create_driver")
-def create_driver(driver:DriverCreateIn,db:SessionDep):
+def create_driver(db:SessionDep,driver:DriverCreateIn, user: Annotated[str,Depends(require_role('True'))]):
     D = Driver(**driver.model_dump())
     D.password = hash_password(driver.password)
     db.add(D)
@@ -104,3 +106,14 @@ async def driver_position(websocket: WebSocket, driver_id: int, db: SessionDep):
 
     except WebSocketDisconnect:
         del active_connections[driver_id]
+
+
+@driver_router.put("/set_calification")
+def set_calification(db:SessionDep, id:int, calification:int):
+    driver = db.get(Driver, id)
+    if not driver:
+        raise HTTPException(status_code=404, detail="Deriver not found")
+    driver.calification = calification
+    db.commit()
+    db.refresh(driver)
+    return driver

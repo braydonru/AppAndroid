@@ -13,6 +13,7 @@ class Driver(SQLModel, table=True):
     longitude: Optional[float] = Field(default=0.0)
     latitude: Optional[float] = Field(default=0.0)
     admin: Optional[bool] = Field(default=False)
+    calification: Optional[int] = Field(default=1, ge=1, le=5)
 
 class DriverCreateIn(SQLModel):
     name: str = Field(default=None)
