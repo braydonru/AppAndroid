@@ -43,12 +43,12 @@ async def get_drivers(websocket: WebSocket, db: SessionDep):
 
 @driver_router.post("/create_driver")
 def create_driver(db:SessionDep,driver:DriverCreateIn):
-    D = Driver(**driver.model_dump())
-    D.password = hash_password(driver.password)
-    db.add(D)
+    driver_db = Driver(**driver.model_dump())
+    driver.password = hash_password(driver.password)
+    db.add(driver_db)
     db.commit()
-    db.refresh(D)
-    return D
+    db.refresh(driver_db)
+    return driver_db
 
 @driver_router.put("/activate_deactivate_driver")
 def activate_driver(db:SessionDep, id:int):
