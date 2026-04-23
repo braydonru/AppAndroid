@@ -42,7 +42,7 @@ async def get_drivers(websocket: WebSocket, db: SessionDep):
         print("Cliente desconectado")
 
 @driver_router.post("/create_driver")
-def create_driver(db:SessionDep,driver:DriverCreateIn, user: Annotated[str,Depends(require_role('True'))]):
+def create_driver(db:SessionDep,driver:DriverCreateIn):
     D = Driver(**driver.model_dump())
     D.password = hash_password(driver.password)
     db.add(D)
